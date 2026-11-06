@@ -1,0 +1,22 @@
+# Repair stage. nvs_repair installs it into the same env as the finder, so
+# torch is whatever the finder's CUDA rasterisers build against (2.7.1+cu128;
+# 2.10+ also works here). Take the cu128 build from the PyTorch index --
+# Blackwell (sm_120) needs it -- and pin it with a constraints file so the
+# packages below do not swap it out.
+torch>=2.7.1
+diffusers==0.37.1
+transformers==5.5.0
+numpy>=2.0
+opencv-python-headless>=4.10    # fisheye undistortion in prepare.py
+h5py>=3.10                      # caption.h5
+einops>=0.8                     # ArtiFixer's transformer/pipeline
+scipy>=1.15                     # camera_rays.py: rotation averaging
+accelerate>=1.0                 # diffusers pipeline helpers
+omegaconf>=2.3
+pillow>=10
+imageio>=2.34
+imageio-ffmpeg>=0.5
+
+# The `opacity` stage runs under a different interpreter that has gsplat:
+#   pip install gsplat
+# plus `ninja` on PATH (gsplat JIT-compiles its CUDA kernels on first use).

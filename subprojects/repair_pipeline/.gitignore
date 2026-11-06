@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+outputs/
+.cache/
+*.h5
+!configs/**/*.h5
+*.pt
+*.mp4
+*.png
+.venv/

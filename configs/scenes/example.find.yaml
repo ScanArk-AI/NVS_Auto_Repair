@@ -1,0 +1,12 @@
+# Stage 1 (repair_view_finder) scene config -- paths relative to scene.root.
+scene:
+  root: /data/my_scene
+  ply: point_cloud/iteration_30000/point_cloud.ply
+  sparse: sparse/0
+  frame_label: unknown
+geometry:
+  # Scene units per metre. A COLMAP model has an arbitrary scale: `auto`
+  # estimates it from the median camera height above the floor of a handheld /
+  # body-worn capture; put the real number if you know it, e.g. 1.0 for a
+  # metric (LiDAR-registered) capture.
+  units_per_metre: auto

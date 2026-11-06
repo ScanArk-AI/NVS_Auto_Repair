@@ -1,0 +1,87 @@
+# Method defaults -- internal. Scene configs (configs/scenes/*.yaml) override
+# this file; anything can also be overridden with `--set a.b=value`.
+#
+# Scene paths and per-run choices belong in a scene config, not here.
+
+scene:
+  root: null            # required: directory holding the 3DGS ply + COLMAP + photos
+  ply: null             # null = auto (aligned.ply / source.ply / output/point_cloud/point_cloud.ply)
+  sparse: null          # null = auto (sfm_results/ / sparse/0/)
+  images: images        # photo root, relative to scene.root
+  mask_invalid: white   # black | white | none  -- see repair_pipeline/masks.py
+  min_opacity: 0.1      # Gaussians below this are ignored for the frustum test
+  name: null            # scene label; null = root basename
+
+input:
+  repair_root: null     # required: <repair_view_finder out>/repair
+
+refer:
+  num_views: 12
+  # coverage: pick photo by photo, each covering most of what the trajectory
+  #   sees and the picks so far do not, counted per viewing direction (within
+  #   angle_deg); among the `candidates` best by shared Gaussians.
+  # overlap: the top num_views by shared Gaussians (ArtiFixer's own rule).
+  strategy: coverage
+  candidates: 64
+  angle_deg: 30.0
+  sample_gaussians: 100000
+  # Photos whose dynamic-object mask covers more than this fraction are not candidates.
+  max_mask_frac: 0.10
+  fill_masked: false    # true = paint masked pixels with the surrounding median
+  # Camera the model is told each reference has. prepared = that of the image it
+  # is fed (undistorted / cropped / resized); photo = the source photo's.
+  neighbor_intrinsics: prepared
+  target_fov_deg: null  # null = derive from the trajectory's own intrinsics
+
+cache:
+  dir: .cache           # frustum + mask-fraction caches
+
+opacity:
+  enabled: true         # ArtiFixer needs rendered alpha; fill it in when missing
+  # Interpreter that can `import gsplat`. null = the one running this process;
+  # set it only when gsplat is installed in a different environment.
+  python: null
+
+prompt:
+  caption_h5: null      # reuse an existing caption file
+  text: null            # or a literal caption, encoded here
+  text_file: null       # or a one-line text file
+  # Weight paths may be relative to $NVS_REPAIR_WEIGHTS (default: <nvs_repair>/checkpoints).
+  text_encoder: ArtiFixer/Wan-AI/Wan2.1-T2V-14B-Diffusers
+
+model:
+  variant: 1.3b
+  repo: null            # ArtiFixer checkout; null = $ARTIFIXER_REPO
+  device: cuda
+  frames_per_block: 7
+  local_attn_size: 21
+  sink_size: 7
+  # artifixer | passthrough (renders unchanged, no weights -- wiring checks) |
+  # package.module:ClassName (your own model; see repair_pipeline/backends.py)
+  backend: artifixer
+  num_inference_steps: 4
+  # Scene units -> ArtiFixer units. null = 0.01 / units_per_metre from the
+  # finder's repair/scene.json (0.01 without one).
+  camera_scale: null
+  attention_backend: null      # null = ArtiFixer's auto choice
+  max_neighbors_per_encode: null
+  # For 16 GB GPUs: low_vram = trim_kv_cache + max_neighbors_per_encode 2 (when
+  # unset); same output, less GPU memory.
+  low_vram: false
+  trim_kv_cache: false         # size the KV cache to the clip, not local_attn_size (same output, less memory)
+  seed: null                   # set for reproducible sampling
+  variants:
+    1.3b:
+      checkpoint_pt: ArtiFixer/artifixer-1.3b.pt
+      model_id: ArtiFixer/Wan-AI/Wan2.1-T2V-1.3B-Diffusers
+    14b:
+      checkpoint_pt: ArtiFixer/artifixer-14b-bf16.pt
+      model_id: ArtiFixer/Wan-AI/Wan2.1-T2V-14B-Diffusers
+
+output:
+  dir: null             # null = outputs/<scene config name>
+  skip_existing: false  # true = leave trajectories that already have repaired/ alone
+  save_png: true
+  save_mp4: true
+  before_after: true
+  fps: 15

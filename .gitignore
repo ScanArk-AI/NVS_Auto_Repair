@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+outputs/
+configs/envs.local.yaml
+
+# weights are downloaded, never committed (see checkpoints/README.md)
+checkpoints/*
+!checkpoints/.gitkeep
+!checkpoints/README.md
+outputs/
+.cache/
+build/
+*.egg-info/
+configs/scenes/generated/

@@ -1,0 +1,69 @@
+# Repository defaults. No machine paths here -- those live in configs/envs.local.yaml,
+# which bootstrap.sh generates (and which is gitignored).
+
+python: python3.12
+# One environment (torch 2.7.1, cu128) serves both stages.
+torch_version: "2.7.1"
+torch_index: https://download.pytorch.org/whl/cu128
+artifixer_commit: a392c4d
+
+# The finder's GAVIS core and CUDA rasterisers are not vendored: bootstrap.sh
+# clones each at the pinned commit into <runtime>/src/ and builds it there.
+third_party:
+  gavis:                        # python package; imported via repair_view_finder/gavis_compat.py
+    url: https://github.com/xsj01/gavis
+    commit: 6bc386f338e1e2bc18e84d48d8a30848ddaca23b
+  diff_gaussian_rasterization:  # INRIA 3DGS rasteriser, dr_aa branch (+ glm submodule); non-commercial licence
+    url: https://github.com/graphdeco-inria/diff-gaussian-rasterization
+    commit: 9c5c2028f6fbee2be239bc4c9421ff894fe4fbe0
+  gavis_rasterizer:             # builds a package named gavis_rasterization
+    url: https://github.com/xsj01/gavis_rasterizer
+    commit: 9fe5f62ddc8fd9b26e206da0bbb2a912d2d2a329
+  simple_knn:
+    url: https://gitlab.inria.fr/bkerbl/simple-knn.git
+    commit: 86710c2d4b46680c02301765dd79e465819c8f19
+
+# Weights live in the repo, under this directory: bootstrap downloads into it,
+# or the entries can be symlinks to an existing download.
+checkpoints_dir: checkpoints
+checkpoints:
+  artifixer:
+    1.3b:
+      checkpoint_pt: ArtiFixer/artifixer-1.3b.pt
+      model_id: ArtiFixer/Wan-AI/Wan2.1-T2V-1.3B-Diffusers
+    14b:
+      checkpoint_pt: ArtiFixer/artifixer-14b-bf16.pt
+      model_id: ArtiFixer/Wan-AI/Wan2.1-T2V-14B-Diffusers
+  # Caption encoder. null = the selected variant's Wan repo: the 1.3B and 14B
+  # repos ship the same UMT5-XXL, so a 1.3B-only install needs nothing extra.
+  text_encoder: null
+
+paths:
+  artifixer_repo: null      # set by bootstrap.sh
+
+model:
+  variant: 1.3b
+  device: cuda      # which GPU the repair stage uses; the VRAM gate watches this one
+
+workflow:
+  force_find: false         # re-run stage 1 even if trajectories exist
+  force_select: false       # re-pick reference views even if selected.json exists
+  force_repair: false       # re-run stage 2 even if everything is repaired
+  skip_select: false
+  # How stage 2 picks each trajectory's 12 reference views:
+  #   photos       real photos only, picked by repair.set refer.strategy (default)
+  #   progressive  trajectories are repaired one after another, and later ones
+  #                may swap up to 4 photos for already-repaired frames that see
+  #                what the photos do not see from a similar direction. Tunable
+  #                via repair.set: progressive.max_generated / angle_deg / ...
+  #                (see subprojects/repair_pipeline/repair_pipeline/progressive.py)
+  reference_mode: photos
+  # The repair model is conditioned on a one-paragraph scene description
+  # (<out>/caption.h5). When it is missing, one is made from, in order:
+  caption_text: null         # 1. your own description; set this and no VLM is called
+  auto_caption: true         # 2. else ask a VLM (NVS_REPAIR_VLM_URL / _KEY / _MODEL / _API);
+                             #    false = repair with no description at all
+  caption_kind: scene        # scene | scene_motion (VLM prompt)
+  caption_source: photos     # what the VLM looks at: photos (4 spread over the capture;
+                             # falls back to renders if none are readable) | renders
+  vram_wait_min: 30          # wait this long for the repair GPU to have room

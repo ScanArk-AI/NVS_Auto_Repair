@@ -1,0 +1,8 @@
+# Stage 2 (repair_pipeline) scene config -- paths relative to scene.root.
+scene:
+  root: /data/my_scene
+  ply: point_cloud/iteration_30000/point_cloud.ply
+  sparse: sparse/0
+  images: images
+  mask_invalid: none               # none | white | black: which mask value marks pixels to ignore
+  name: my_scene

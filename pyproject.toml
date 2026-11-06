@@ -1,0 +1,31 @@
+# The orchestrator. It runs in the repair env and starts each stage with that
+# stage's own interpreter (see configs/envs.local.yaml, written by bootstrap.sh).
+# Install editable -- configs/ and subprojects/ are found relative to the repo:
+#   pip install -e .
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nvs-repair"
+version = "0.1.0"
+description = "Find the novel-view trajectories a 3DGS scene renders worst, and repair them with a video diffusion model"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE.md"]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0",
+    "omegaconf>=2.3",
+    "pillow>=10",
+    "pyyaml>=6",
+]
+
+[project.scripts]
+nvs-repair = "nvs_repair.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["nvs_repair*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

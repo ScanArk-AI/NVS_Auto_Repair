@@ -1,0 +1,51 @@
+# Scene config — this is the only file you normally edit.
+#
+# Inputs
+#   scene.root       directory containing the 3DGS model and COLMAP SfM
+#   scene.ply        3DGS .ply; null = auto-detect aligned.ply / source.ply /
+#                    output/point_cloud/point_cloud.ply
+#   scene.sparse     COLMAP directory (cameras.bin|txt + images.bin|txt);
+#                    null = auto-detect
+#   scene.frame_label  free label written to the outputs: A / B / unknown
+#
+# View selection
+#   views.cameras    null = every camera
+#                    [0, 1] = these camera ids only
+#                    2 = the 2 cameras with the most images
+#   views.count      number of ranked views in the overview image
+#   views.width/height  render size for scoring and review
+#
+# Repair trajectories
+#   trajectories.per_camera  trajectories generated for each camera
+#   trajectories.frames      frames per trajectory
+#   trajectories.height_m    camera height above the floor (0.40 = ground robot)
+#
+# Scale (every *_m value is in metres)
+#   geometry.units_per_metre  1.0 = metric scene; a number if you know the
+#                    scale; auto = estimate from the camera height above the
+#                    floor
+#
+# Optional
+#   output_dir       null = outputs/<this config file name>
+
+scene:
+  root: /absolute/path/to/scene
+  ply: null
+  sparse: null
+  frame_label: unknown
+
+views:
+  cameras: null
+  count: 40
+  width: 640
+  height: 480
+
+trajectories:
+  per_camera: 12
+  frames: 25
+  height_m: 0.40
+
+geometry:
+  units_per_metre: 1.0
+
+output_dir: null

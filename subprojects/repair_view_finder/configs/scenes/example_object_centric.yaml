@@ -1,0 +1,31 @@
+# Example: an object-centric capture outdoors (a handheld video walking
+# around one subject on open ground), trained as 3DGS on COLMAP. Same layout
+# as example.yaml. For a table or small room indoors see
+# example_object_centric_indoor.yaml.
+#
+# The method defaults target indoor rooms seen from a low, level robot
+# camera: trajectories at 0.4 m, looking level or up, and something within
+# 0.2-1.5 m straight ahead that is not the floor. Around a single subject
+# outdoors that finds nothing, so here the trajectories sit higher, look
+# down at the subject, and the ground counts as "something ahead".
+scene:
+  root: /path/to/scene
+  ply: point_cloud/iteration_30000/point_cloud.ply
+  sparse: sparse/0
+  frame_label: unknown
+
+views:
+  cameras: null
+  count: 40
+
+trajectories:
+  per_camera: 12
+  frames: 25
+  height_m: 0.8                       # metres above the ground
+  pitches: [-20, -35]                 # degrees; negative looks down
+  forward_band_m: [0.3, 3.0]          # subject distance along the view axis
+  forward_height_band_m: [0.0, 3.0]   # the ground counts as a hit
+  forward_min_opacity: 0.5           # ignore the translucent floaters handheld 3DGS leaves near the path
+
+geometry:
+  units_per_metre: auto

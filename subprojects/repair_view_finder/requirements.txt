@@ -1,0 +1,23 @@
+# Python dependencies for repair_view_finder.
+# PyTorch must be the cu128 build on this machine:
+#   pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1
+numpy>=2.0
+scipy>=1.15   # sph_harm_y; sph_harm itself was removed in 1.16
+matplotlib
+pillow
+imageio
+imageio-ffmpeg
+omegaconf
+plyfile
+jaxtyping
+nerfacc
+
+# GAVIS and the three CUDA rasterisers are not vendored. bootstrap.sh clones
+# them at the commits pinned in configs/workflow.yaml (third_party:) and builds
+# them with the CUDA toolkit on PATH:
+#   pip install --no-deps --no-build-isolation <src>/gavis
+#   pip install --no-build-isolation <src>/simple_knn
+#   pip install --no-build-isolation <src>/diff_gaussian_rasterization   # dr_aa branch
+#   pip install --no-build-isolation <src>/gavis_rasterizer              # -> gavis_rasterization
+# repair_view_finder/gavis_compat.py bridges the two naming/SciPy mismatches.

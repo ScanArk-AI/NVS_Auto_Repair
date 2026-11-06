@@ -1,0 +1,2 @@
+# Development-only files that make_release.sh (git archive) leaves out of the public tree.
+scripts/make_release.sh export-ignore

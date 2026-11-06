@@ -1,0 +1,84 @@
+# Method defaults — internal.
+#
+# Scene configs (configs/scenes/*.yaml) are merged over this file. Do not put
+# scene paths or per-run choices here; edit a scene config instead.
+
+device: cuda
+
+model:
+  max_gaussians: 1200000     # subsample for the visibility field / scoring
+  seed: 0
+
+views:
+  cameras: null              # null = all; overridden per scene
+  count: 40                  # ranked views in the overview image
+  max_views: 120             # candidate cap for the view ranking (SfM poses)
+  width: 640
+  height: 480
+  max_fov_deg: 100
+
+# The one trajectory-finding algorithm: lower each SfM frame to height_m,
+# level/pitch it, then select frame pairs and interpolate 25 frames.
+trajectories:
+  per_camera: 12
+  frames: 25
+  # The defaults below target a ground robot indoors: a camera 20-40 cm above the
+  # floor looking level or up. Handheld / object-centric captures: see
+  # configs/scenes/example_object_centric*.yaml.
+  height_m: 0.40             # metres above the floor; a list ([0.3, 0.8]) searches each
+  pitches: [0, 10, 20]
+  fps: 15
+  width: 960
+  height: 544
+  orientation: auto         # auto = follow each camera (portrait phone video -> 544x960); landscape | portrait
+  fov_y_deg: 75
+  uq_width: 800              # scoring / view masks
+  uq_height: 600
+  query_target: 160          # SfM frames sampled per camera
+  min_frames: 12             # skip cameras with fewer frames
+  max_gap: 15                # max frame-index gap inside a pair
+  dist_m: [0.2, 1.5]         # spatial baseline
+  iou: [0.08, 0.7]           # view overlap
+  clearance_m: 0.15          # min distance from the scene (collision)
+  forward_band_m: [0.2, 1.5]   # nearest non-floor GS along the view axis
+  forward_height_band_m: [0.15, 3.0]  # what counts as "non-floor": height above the floor
+  forward_min_opacity: 0.0   # Gaussians below this opacity are ignored by the forward check (0.5 for noisy handheld 3DGS)
+  forward_far_m: 8.0
+  forward_step_m: 0.05
+  forward_radius_m: 0.08
+  uq_percentile: 40          # segment UQ threshold
+  min_sep: 3                 # temporal separation between selected pairs
+  voxel_m: 0.2               # coverage voxel
+  scene_weight: 0.2
+  path_weight: 0.5
+  uq_weight: 0.3
+
+geometry:
+  # Every *_m value in these configs is in metres. Scene units per metre:
+  #   1.0   metric capture (LiDAR-registered rigs)
+  #   <n>   a measured scale, e.g. 3.7 if 1 m spans 3.7 units in the reconstruction
+  #   auto  estimate as (median camera height above the floor) / capture_height_m,
+  #         for handheld or body-worn captures of unknown scale.
+  # The value used is written to repair/scene.json for the repair stage.
+  units_per_metre: 1.0
+  capture_height_m: 1.2      # auto only: typical camera height of a handheld capture
+  floor_m: null              # floor height in scene units; null = auto when needed
+  up: null                   # null = estimate from camera y axes
+  height_band_m: [0.0, 1.5]  # defect voxels only near the floor
+
+field:
+  cam_id: null               # set to force one field for every camera
+  per_camera: true           # one visibility field per camera
+  views: 40                  # training views per field
+
+scoring:
+  voxel_m: 0.10
+  uq_excess: 1.0
+  region_voxel_m: 0.6
+  max_projection_points: 400000
+  projection_margin_m: 5.0
+
+output:
+  out_dir: null              # null = outputs/<scene config name>
+  bg_color: [1.0, 1.0, 1.0]
+  full_render: true

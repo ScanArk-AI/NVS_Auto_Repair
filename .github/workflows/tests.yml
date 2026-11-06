@@ -1,0 +1,26 @@
+# CPU-only checks. The GPU stages (GAVIS rendering, ArtiFixer inference) need
+# CUDA 12.8 and model weights, so they are smoke-tested by hand (see README).
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install test dependencies (no torch needed)
+        run: pip install numpy scipy omegaconf pyyaml pillow pytest
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Check shell scripts parse
+        run: bash -n bootstrap.sh

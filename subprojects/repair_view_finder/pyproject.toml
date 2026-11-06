@@ -1,0 +1,27 @@
+# Stage 1: find the trajectories most worth repairing.
+# Install editable (configs/ is found relative to the package):
+#   pip install -e subprojects/repair_view_finder
+# Dependencies are read from requirements.txt. GAVIS and the three CUDA
+# rasterisers are not listed: they must be built with --no-build-isolation
+# against the installed cu128 torch, so bootstrap.sh installs them from the
+# commits pinned under `third_party:` in configs/workflow.yaml.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repair-view-finder"
+version = "0.1.0"
+description = "Rank novel-view trajectories of a 3DGS scene by rendering uncertainty"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[project.scripts]
+repair-view-finder = "repair_view_finder.cli:main"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["repair_view_finder*"]

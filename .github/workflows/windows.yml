@@ -1,0 +1,49 @@
+# Build the Windows GUI (windows/): tests on a Windows runner, the release zip
+# as a build artifact, and -- for a v* tag -- that zip attached to a GitHub
+# Release. The pipeline itself runs inside WSL on the user's machine, so no GPU
+# is needed here.
+name: windows
+
+on:
+  push:
+    tags: ["v*"]               # path filters are not applied to tag pushes
+    branches: ["**"]
+    paths:
+      - "windows/**"
+      - "tests/test_windows_*.py"
+      - ".github/workflows/windows.yml"
+  pull_request:
+    paths:
+      - "windows/**"
+      - "tests/test_windows_*.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write              # attach the zip to the Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tests (Windows paths and the GUI's logic)
+        run: |
+          pip install numpy scipy omegaconf pyyaml pillow pytest
+          python -m pytest -q tests/test_windows_wsl.py tests/test_windows_setup.py tests/test_windows_runner.py tests/test_windows_app.py tests/test_windows_native.py
+      - name: Build the release zip
+        shell: pwsh
+        run: |
+          $v = if ($env:GITHUB_REF_TYPE -eq "tag") { $env:GITHUB_REF_NAME.TrimStart("v") } else { "" }
+          ./windows/build.ps1 -Version $v
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nvs_repair-windows
+          path: build/nvs_repair-*-windows.zip
+      - name: Attach to the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/nvs_repair-*-windows.zip

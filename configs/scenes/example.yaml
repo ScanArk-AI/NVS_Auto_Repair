@@ -1,0 +1,31 @@
+# Scene config template. Easiest is to let the tool write all three files:
+#
+#   python run.py make-config --scene-root /data/my_scene
+#   python run.py all --config configs/scenes/generated/my_scene/workflow.yaml
+#
+# Or copy example*.yaml, point the paths at your scene, and run
+#
+#   python run.py doctor --config configs/scenes/my_scene.yaml
+#   python run.py all    --config configs/scenes/my_scene.yaml --limit 1
+#
+# A scene is a trained 3DGS (.ply), the COLMAP model it was trained from, and
+# the photos. Each stage keeps its own config (find / repair) so it can also be
+# run on its own; this file only wires them together.
+
+scene:
+  root: /data/my_scene             # used for the default output name and by doctor
+
+out: null                          # null = <repo>/outputs/<this file's name>
+
+model:
+  variant: 1.3b                    # 1.3b | 14b
+
+find:
+  config: configs/scenes/example.find.yaml
+  set: []                          # passed through, e.g. ['trajectories.per_camera=12']
+  limit_views: null                # small number = quick smoke run (changes the trajectories)
+
+repair:
+  config: configs/scenes/example.repair.yaml
+  set: []                          # passed through, e.g. ['refer.num_views=12']
+  limit: null

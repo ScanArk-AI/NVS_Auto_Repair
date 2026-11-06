@@ -1,0 +1,26 @@
+# Stage 2: pick reference photos, render opacity, repair with ArtiFixer, write frames.
+# Install editable (configs/ is found relative to the package):
+#   pip install -e subprojects/repair_pipeline
+# Dependencies are read from requirements.txt. gsplat is not listed: bootstrap.sh
+# installs it with --no-deps so it cannot replace the cu128 torch. ArtiFixer's
+# model code is cloned by bootstrap.sh, not installed.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repair-pipeline"
+version = "0.1.0"
+description = "Reference-view selection and ArtiFixer video repair for 3DGS novel-view trajectories"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[project.scripts]
+repair-pipeline = "repair_pipeline.cli:main"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["repair_pipeline*"]

@@ -1,0 +1,31 @@
+# Example scene config -- copy it and change the paths.
+#
+#   python run.py all --config configs/scenes/my-scene.yaml --limit 1
+#
+# Expects a 3DGS ply, a COLMAP model of the photos, and the photos themselves,
+# plus repair_view_finder's output for the same scene.
+
+scene:
+  root: /path/to/scene            # directory holding the files below
+  ply: point_cloud.ply            # relative to scene.root; null = auto-detect
+  sparse: sparse/0                # COLMAP model; null = auto-detect
+  images: images                  # photo root
+  mask_invalid: none              # black | white | none -- polarity of <images>/mask_* masks
+  name: my_scene
+
+input:
+  repair_root: /path/to/repair_view_finder/outputs/my_scene/repair
+
+refer:
+  num_views: 12
+  max_mask_frac: 0.10
+
+prompt:
+  # One of: an existing caption.h5, a literal description, or a text file.
+  # All null = ArtiFixer's zero prompt.
+  caption_h5: null
+  text: null
+  text_file: null
+
+output:
+  dir: outputs/my_scene

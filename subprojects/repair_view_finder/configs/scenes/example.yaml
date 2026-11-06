@@ -1,0 +1,28 @@
+# Example scene: a 3DGS model trained on a COLMAP reconstruction.
+#
+#   <scene.root>/
+#     sparse/0/{cameras,images,points3D}.bin    COLMAP model (txt also works)
+#     images/                                   the photos COLMAP registered
+#     point_cloud/iteration_30000/point_cloud.ply   trained 3DGS
+#
+# Copy this file, point scene.root at your scene, and run:
+#   python run.py --config configs/scenes/<your copy>.yaml
+# See configs/scene_template.yaml for every field.
+scene:
+  root: /path/to/scene
+  ply: point_cloud/iteration_30000/point_cloud.ply   # relative to scene.root
+  sparse: sparse/0
+  frame_label: unknown
+
+views:
+  cameras: null      # all cameras (cameras with < 12 frames are skipped)
+  count: 40
+
+trajectories:
+  per_camera: 12
+  frames: 25
+
+geometry:
+  # COLMAP's scale is arbitrary: estimate it from the camera height above the
+  # floor, or replace with the real number of scene units per metre.
+  units_per_metre: auto

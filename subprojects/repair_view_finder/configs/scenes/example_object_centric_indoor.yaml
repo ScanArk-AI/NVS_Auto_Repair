@@ -1,0 +1,36 @@
+# Example: an object-centric capture indoors -- a handheld video walking
+# around a table, desk or small room, trained as 3DGS on COLMAP. Same layout
+# as example.yaml.
+#
+# Compared with example_object_centric.yaml (outdoor, one subject on open
+# ground), the space is cramped: furniture is close on every side and the
+# walls are near. So the clips sample five heights and look down, level and
+# slightly up, accept something ahead from 0.25 m, and ignore the translucent
+# floaters a handheld 3DGS leaves around the camera path (without that, every
+# candidate "hits something" 10 cm ahead and none is kept).
+scene:
+  root: /path/to/scene
+  ply: point_cloud/iteration_30000/point_cloud.ply
+  sparse: sparse/0
+  frame_label: unknown
+
+views:
+  cameras: null
+  count: 40
+
+trajectories:
+  per_camera: 30
+  frames: 25
+  height_m: [0.3, 0.55, 0.8, 1.0, 1.2]   # metres above the floor, each searched
+  pitches: [-30, -15, 0, 10]             # degrees; negative looks down
+  forward_band_m: [0.25, 3.0]            # furniture and walls are close
+  forward_height_band_m: [0.0, 3.0]      # the floor counts as a hit
+  forward_min_opacity: 0.5               # ignore translucent floaters near the path
+  iou: [0.05, 0.85]
+  uq_percentile: 25
+  min_sep: 2
+  dist_m: [0.15, 2.0]
+  clearance_m: 0.10
+
+geometry:
+  units_per_metre: auto
