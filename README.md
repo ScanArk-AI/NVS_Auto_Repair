@@ -129,6 +129,14 @@ $PY run.py all --config configs/scenes/generated/my_scene/workflow.yaml \
 - nerfstudio 的 [gsplat](https://github.com/nerfstudio-project/gsplat) 与 [nerfacc](https://github.com/nerfstudio-project/nerfacc)。
 - [Nerfbusters](https://ethanweber.me/nerfbusters) 数据集（Warburg、Weber 等，ICCV 2023），提供 *table* 与 *picnic* 场景。
 
+## 贡献者 / Contributors
+
+感谢以下贡献者：
+
+- [@superdonkey007](https://github.com/superdonkey007)
+- [@CwLiuzzZ](https://github.com/CwLiuzzZ)
+
+
 如在研究中使用 nvs_repair，请引用 GAVIS 与 ArtiFixer。
 
 nvs_repair 采用 [Apache-2.0](LICENSE) 许可证，详见 [NOTICE.md](NOTICE.md)。
